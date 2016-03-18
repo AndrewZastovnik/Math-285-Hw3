@@ -19,18 +19,18 @@ def do_LDA2D_KNN(digits,p,q):
 
     new_train = np.zeros((digits.train_Images.shape[0],p*q))
     for i in range(digits.train_Images.shape[0]):
-        new_train[i] = np.transpose(l)@digits.train_Images[i].reshape(28,28)@r
+        new_train[i] = (np.transpose(l)@digits.train_Images[i].reshape(28,28)@r).reshape(p*q)
     new_test = np.zeros((digits.test_Images.shape[0],p*q))
     for i in range(digits.test_Images.shape[0]):
-        new_test[i] = np.transpose(l)@digits.test_Images[i].reshape(28,28)@r
+        new_test[i] = (np.transpose(l)@digits.test_Images[i].reshape(28,28)@r).reshape(p*q)
 
-    labels, nearest = KNN(new_train,digits.train_Labels,10,new_test,'euclidean')
+    labels, nearest = KNN(new_train,digits.train_Labels,new_test,10,'euclidean')
     pickle.dump(labels, open('LDA2D'+ str(p) + 'x' + str(q) + '_EU.p','wb'))
     pickle.dump(nearest, open('LDA2D'+ str(p) + 'x' + str(q) + '_EU.p','wb'))
-    labels, nearest = KNN(new_train,digits.train_Labels,10,new_test,'cityblock')
+    labels, nearest = KNN(new_train,digits.train_Labels,new_test,10,'cityblock')
     pickle.dump(labels, open('LDA2D'+ str(p) + 'x' + str(q) + '_CB.p','wb'))
     pickle.dump(nearest, open('LDA2D'+ str(p) + 'x' + str(q) + '_CB.p','wb'))
-    labels, nearest = KNN(new_train,digits.train_Labels,10,new_test,'cosine')
+    labels, nearest = KNN(new_train,digits.train_Labels,new_test,10,'cosine')
     pickle.dump(labels, open('LDA2D'+ str(p) + 'x' + str(q) + '_CO.p','wb'))
     pickle.dump(nearest, open('LDA2D'+ str(p) + 'x' + str(q) + '_CO.p','wb'))
 
