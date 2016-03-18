@@ -126,21 +126,23 @@ class nvb:
         s = np.std(factor)**2
         def normal(x):
             if s == 0:
-                return 10
+                return 1
             else:
                 return (1/(2*3.14*s)**.5)*2.71828**(-((x-mu)**2)/(2*s)) +1
         return normal
 
     def predict(self,test_data):
-        pofl = np.zeros((test_data.shape[0],np.unique(self.train_labs).shape[0]))
-        for l in range(np.unique(self.train_labs).shape[0]):
-            for factors in range(test_data.shape[1]):
-                for i in range(test_data.shape[0]):
-                    print(test_data[i,factors])
-                    print(str(i)+' '+str(factors))
-                    print(self.likelihood[str(factors)+'l'+str(l)](test_data[i,factors]))
-                    pofl[i,l] = pofl[i,l]+math.log(self.likelihood[str(factors)+'l'+str(l)](test_data[i,factors]))
-        labels = self.train_labs[np.argmax(pofl,0)]
+
+        labels = np.zeros(test_data.shape[0])
+        for i in range(test_data.shape[0]):
+            pofl = np.zeros(np.unique(self.train_labs).shape[0])
+            for l in range(np.unique(self.train_labs).shape[0]):
+                for factors in range(test_data.shape[1]):
+                        print(test_data[i,factors])
+                        print(str(i)+' '+str(factors))
+                        print(self.likelihood[str(factors)+'l'+str(l)](test_data[i,factors]))
+                        pofl[l] = pofl[l]+math.log(self.likelihood[str(factors)+'l'+str(l)](test_data[i,factors]))
+            labels[i] = self.train_labs[np.argmax(pofl)]
         return labels
 
     def count_unique(self):
