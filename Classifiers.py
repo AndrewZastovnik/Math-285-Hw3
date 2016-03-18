@@ -113,39 +113,49 @@ class nvb:
     # Has atributes fit distribution and predict
     # fit creates a dictionary of likelihood functions
     def fit(self,train_data,train_labs):
+        # Creates the distributions associated with each factor and class
         self.train_labs = train_labs
-        self.likelihood = {}
+        self.likelihood = {} #  a dictionary to store our dist functions
         lab = np.unique(train_labs)
         for l in range(lab.shape[0]):
             for factors in range(train_data.shape[1]):
+                # Get the indices for a specific class
                 indices = np.nonzero(np.array(train_labs == lab[l]))
+                # Create likelihood functions
                 self.likelihood[str(factors)+'l'+str(lab[l])] = self.distribution(train_data[indices,factors])
 
     def distribution(self,factor):
-        mu = np.mean(factor)
-        s = np.std(factor)**2
+        # Creates a distribution give a factor
+        mu = np.mean(factor) #  Finds the mean
+        s = np.var(factor)  #  Findes the variance
         def normal(x):
-            if s == 0:
-                return 1
+            if s == 0: # what do we do if variance is 0?
+                # Create a very small box with length 2e-10 around the mean
+                if x >=mu +1e-10 and x <= mu - 1e-10:
+                    return (0.5e10) + 1 # The height of our box +1
+                else:
+                    return 0 + 1 # if it is outside our range likelihood is 0 + 1
+                # I added 1 to everything so I could take the log
+                # Because of underflow and I guess because i did that^
             else:
+                # Now our normal distributions
                 return (1/(2*3.14*s)**.5)*2.71828**(-((x-mu)**2)/(2*s)) +1
         return normal
 
     def predict(self,test_data):
-
+        # The thing the gives us predictions give test data
         labels = np.zeros(test_data.shape[0])
         for i in range(test_data.shape[0]):
             pofl = np.zeros(np.unique(self.train_labs).shape[0])
             for l in range(np.unique(self.train_labs).shape[0]):
                 for factors in range(test_data.shape[1]):
-                        print(test_data[i,factors])
-                        print(str(i)+' '+str(factors))
-                        print(self.likelihood[str(factors)+'l'+str(l)](test_data[i,factors]))
-                        pofl[l] = pofl[l]+math.log(self.likelihood[str(factors)+'l'+str(l)](test_data[i,factors]))
+                    pofl[l] = pofl[l]+math.log(self.likelihood[str(factors)+'l'+str(l)](test_data[i,factors]))
             labels[i] = self.train_labs[np.argmax(pofl)]
+            print(i)
         return labels
 
     def count_unique(self):
+        # Maybe I should use this to get the prior probabilities but I'm not
         labs = np.unique(self.train_labs)
         labs_count = np.zeros(labs.shape) #this probabily will need to be checked
         for l in self.train_labs.shape[0]:
