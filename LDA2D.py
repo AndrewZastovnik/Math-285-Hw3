@@ -1,6 +1,7 @@
 import numpy as np
 
 def iterative2DLDA(Trainset, LabelTrain, p, q,r, c):
+    # This was basically just copied from the function in matlab
     Trainset = np.transpose(Trainset) #  Make it so images are columns
     m = Trainset.shape
     classnumber = max(LabelTrain)
@@ -24,9 +25,11 @@ def iterative2DLDA(Trainset, LabelTrain, p, q,r, c):
             Trainset1=Trainset[:,temp1]
             m2 = Trainset1.shape
             for s in range(m2[1]):
-                sw1=sw1+(Trainset1[:,s].reshape(r,c) - \
-                    aa[i].reshape(r,c))@R@np.transpose(R)@np.transpose((Trainset1[:,s].reshape(r,c) - aa[i].reshape(r,c)))
-            sb1=sb1+m1[0]*(aa[i].reshape(r,c) - bb1.reshape(r,c))@R@np.transpose(R)@np.transpose((aa[i].reshape(r,c)-bb1.reshape(r,c)))
+                sw1=sw1+(Trainset1[:,s].reshape(r,c) - aa[i].reshape(r,c))\
+                        @R@np.transpose(R)@\
+                        np.transpose((Trainset1[:,s].reshape(r,c) - aa[i].reshape(r,c)))
+            sb1=sb1+m1[0]*(aa[i].reshape(r,c) - bb1.reshape(r,c))\
+                    @R@np.transpose(R)@np.transpose((aa[i].reshape(r,c)-bb1.reshape(r,c)))
         s,u = np.linalg.eig(np.linalg.pinv(sw1)@sb1)
         tt = s
         ind = tt.argsort()[::-1]
@@ -42,8 +45,9 @@ def iterative2DLDA(Trainset, LabelTrain, p, q,r, c):
             Trainset1 = Trainset[:,temp1]
             m2 = Trainset1.shape
             for s in range(m2[1]):
-                sw2=sw2+np.transpose((Trainset1[:,s].reshape(r,c) - \
-                    aa[i].reshape(r,c)))@L@np.transpose(L)@(Trainset1[:,s].reshape(r,c) - aa[i].reshape(r,c))
+                sw2=sw2+np.transpose((Trainset1[:,s].reshape(r,c) - aa[i].reshape(r,c)))\
+                        @L@np.transpose(L)@\
+                        (Trainset1[:,s].reshape(r,c) - aa[i].reshape(r,c))
             sb2=sb2+m1[0]*np.transpose((aa[i].reshape(r,c) - bb1.reshape(r,c)))\
                                                @L@np.transpose(L)@(aa[i].reshape(r,c)-bb1.reshape(r,c))
         s1,u1 = np.linalg.eig(np.linalg.pinv(sw2)@sb2)
