@@ -8,7 +8,6 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 def main():
     digits = mnist()
     x = center_matrix_SVD(digits.train_Images)
-    """
     errors_154 = doLDA(x,digits,154)
     pickle.dump(errors_154,open('LDA_154.p','wb'))
     errors_50 = doLDA(x,digits,50)
@@ -16,11 +15,9 @@ def main():
     errors_10 = doLDA(x,digits,10)
     pickle.dump(errors_10,open('LDA_10.p','wb'))
     errors_60 = doLDA(x,digits,60)
-
     errors_60 = doLDA(x,digits,60)
     pickle.dump(errors_60,open('LDA_60.p','wb'))
     prob1_plots(digits)
-    """
     put_into_excel(digits)
 
 

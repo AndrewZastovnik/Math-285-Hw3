@@ -17,7 +17,17 @@ def main():
     pickle.dump(errors_60,open('QDA_60.p','wb'))
     prob1_plots(digits)
     put_into_excel(digits)
+    confusion(digits)
 
+def confusion(digits):
+    myLDA = LDA()
+    x = center_matrix_SVD(digits.train_Images)
+    myLDA.fit(x.PCA[:,:50],digits.train_Labels)
+    newtest = digits.test_Images -x.centers
+    newtest=newtest@np.transpose(x.V[:50,:])
+    labels = myLDA.predict(newtest)
+    import sklearn.metrics as f
+    print(f.confusion_matrix(digits.test_Labels,labels))
 
 def doQDA(x,digits,s):
     myLDA = LDA()
