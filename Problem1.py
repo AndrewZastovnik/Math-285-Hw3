@@ -15,7 +15,6 @@ def main():
     errors_10 = doLDA(x,digits,10)
     pickle.dump(errors_10,open('LDA_10.p','wb'))
     errors_60 = doLDA(x,digits,60)
-    errors_60 = doLDA(x,digits,60)
     pickle.dump(errors_60,open('LDA_60.p','wb'))
     prob1_plots(digits)
     put_into_excel(digits)

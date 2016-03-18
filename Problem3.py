@@ -1,7 +1,6 @@
 from PCA import mnist, center_matrix_SVD,class_error_rate
 from Classifiers import nvb
 import numpy as np
-import pickle
 
 import pylab as plt
 
@@ -10,10 +9,26 @@ def main():
     mynvb = nvb()
     x = center_matrix_SVD(digits.train_Images)
     mynvb.fit(digits.train_Images,digits.train_Labels)
+    labels = mynvb.predict(digits.test_Images)
+    errors_Full, error_Full_index = class_error_rate(labels,digits.test_Labels)
+    mynvb.fit(x.PCA[:,:154],digits.train_Labels)
+    newtest = (digits.test_Images -x.centers)@np.transpose(x.V[:154,:])
+    labels = mynvb.predict(newtest)
+    errors_154, error_Full_index = class_error_rate(labels,digits.test_Labels)
+    mynvb.fit(digits.train_Images,digits.train_Labels)
     mynvb.fit(x.PCA[:,:50],digits.train_Labels)
     newtest = (digits.test_Images -x.centers)@np.transpose(x.V[:50,:])
     labels = mynvb.predict(newtest)
     errors_50, error_Full_index = class_error_rate(labels,digits.test_Labels)
+    mynvb.fit(digits.train_Images,digits.train_Labels)
+    mynvb.fit(x.PCA[:,:70],digits.train_Labels)
+    newtest = (digits.test_Images -x.centers)@np.transpose(x.V[:70,:])
+    labels = mynvb.predict(newtest)
+    errors_70, error_Full_index = class_error_rate(labels,digits.test_Labels)
+    print(errors_Full)
+    print(errors_154)
+    print(errors_50)
+    print(errors_70)
     prob3_plots(mynvb,digits,newtest,pc=0)
     prob3_plots(mynvb,digits,newtest,pc=1)
     prob3_plots(mynvb,digits,newtest,pc=2)
