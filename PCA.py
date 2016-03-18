@@ -39,13 +39,17 @@ def dump_the_svd(digits):
 def class_error_rate(pred_labels,true_labels):
     # for calculating the error rate
     # Also returns a index vector with the position of incorrectly labeled images
-    error = np.zeros(pred_labels.shape[0])
-    error_index = np.zeros((pred_labels.shape[0],pred_labels.shape[1]))
-    for i in range(pred_labels.shape[0]):
-        error[i] = sum(pred_labels[i] != true_labels)/pred_labels.shape[1]
-        # puts each
-        error_index[i] = 1 - np.isclose(pred_labels[i],true_labels)
-        #
+    if len(pred_labels.shape)> 1:
+        error = np.zeros(pred_labels.shape[0])
+        error_index = np.zeros((pred_labels.shape[0],pred_labels.shape[1]))
+        for i in range(pred_labels.shape[0]):
+            error[i] = sum(pred_labels[i] != true_labels)/pred_labels.shape[1]
+            # puts each
+            error_index[i] = 1 - np.isclose(pred_labels[i],true_labels)
+            #
+    else:
+        error = sum(pred_labels != true_labels)/pred_labels.shape[0]
+        error_index = 1 - np.isclose(pred_labels,true_labels)
     return error, error_index
 
 def MFold_plots():

@@ -31,7 +31,7 @@ mfoldX
 import numpy as np
 import math
 
-def KNN(I, L, x, k,weights = 1):
+def KNN(I, L, x, k,metric='euclidean',weights = 1):
     """
     I is the matrix of obs
     L are the labels
@@ -46,7 +46,7 @@ def KNN(I, L, x, k,weights = 1):
     label = np.zeros((k,sizex))
     nearest = np.zeros((sizex,k+1))
     for rowsx in range(0, sizex):
-        dists = cdist(I, np.atleast_2d(x[rowsx]), metric='euclidean')
+        dists = cdist(I, np.atleast_2d(x[rowsx]), metric=metric)
         # Now we should have all our distances in our dist array
         # Next find the k closest neighbors of x
         k_smallest = np.argpartition(dists,tuple(range(1,k+1)),axis=None)
@@ -66,7 +66,6 @@ def KNN(I, L, x, k,weights = 1):
                     indices = inboth(np.arange(0,L.shape[0])[L == labs[p]],k_smallest[:i+2])
                     lab_weighted[p]= np.sum(np.multiply(weights,indices))
                 label[i,rowsx] = labs[np.argmax(lab_weighted)]
-
         if rowsx % 1000 == 1:
             print(rowsx)
     return label, nearest
@@ -132,14 +131,17 @@ class nvb:
             if s == 0: # what do we do if variance is 0?
                 # Create a very small box with length 2e-10 around the mean
                 if x <=mu +1e-10 and x >= mu - 1e-10:
-                    return (0.5e10) +1 # The height of our box +1
+                    return (0.5e10) # The height of our box +1
                 else:
-                    return 0+1  # if it is outside our range likelihood is 0 + 1
-                # I added 1 to everything so I could take the log
-                # Because of underflow and I guess because i did that^
+                    return 1e-100  # if it is outside our range likelihood is 0 + 1
+                # ok can't add 1 to the likelihood functions
             else:
                 # Now our normal distributions
-                return (1/(2*3.14*s)**.5)*2.71828**(-((x-mu)**2)/(2*s))+1
+                l = (1/(2*3.14*s)**.5)*2.71828**(-((x-mu)**2)/(2*s))
+                if l ==0:
+                    # to handel underflow
+                    l=1e-100
+                return l
         return normal
 
     def predict(self,test_data):
